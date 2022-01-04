@@ -5,11 +5,6 @@ import 'package:flutter_movies/src/widgets/movie_list.dart';
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Movies")),
-      body: Container(
-        child: MovieList(),
-      ),
-    );
+    return MovieList();
   }
 }

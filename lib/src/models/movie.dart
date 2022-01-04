@@ -4,7 +4,7 @@ class Movie {
   late double voteAverage;
   late String releaseDate;
   late String overview;
-  late String posterPath;
+  late dynamic posterPath;
 
   Movie(this.id, this.title, this.voteAverage, this.releaseDate, this.overview,
       this.posterPath);
