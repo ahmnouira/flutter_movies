@@ -46,7 +46,7 @@ class _MoviePageState extends State<MoviePage> {
     }
   }
 
-  Future<void> _navigateToFavorite(BuildContext context) async {
+  Future _navigateToFavorite(BuildContext context) async {
     MaterialPageRoute route = MaterialPageRoute(builder: (_) => FavoritePage());
     await Navigator.push(context, route);
   }
@@ -89,17 +89,15 @@ class _MoviePageState extends State<MoviePage> {
         appBar: AppBar(
           title: searchBar,
           actions: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: InkWell(
-                child: Icon(Icons.star),
-                onTap: () => _navigateToFavorite,
-              ),
+            IconButton(
+              padding: EdgeInsets.all(8),
+              icon: visibleIcon,
+              onPressed: _onPress,
             ),
-            InkWell(
-              child: visibleIcon,
-              onTap: _onPress,
-            )
+            IconButton(
+              icon: Icon(Icons.star),
+              onPressed: () => _navigateToFavorite(context),
+            ),
           ],
         ),
         body: loading

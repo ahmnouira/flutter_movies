@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/src/models/movie.dart';
 import 'package:flutter_movies/src/services/favorite_service.dart';
+import 'package:flutter_movies/src/widgets/loading.dart';
 import 'package:flutter_movies/src/widgets/movie_list.dart';
 
 class FavoritePage extends StatefulWidget {
@@ -22,6 +23,7 @@ class _FavoritePageState extends State<FavoritePage> {
     });
     movies = [];
     movies = await favoriteService.getFavorites();
+    print(movies);
     setState(() {
       moviesCount = movies.length;
       movies = movies;
@@ -44,32 +46,13 @@ class _FavoritePageState extends State<FavoritePage> {
       isSmall = true;
     }
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Favorite Movies',
-        ),
-        actions: [],
-      ),
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: Text('My Favourite Movies'),
+        appBar: AppBar(
+          title: Text(
+            'Favorite Movies',
           ),
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: isSmall
-                ? MovieList(
-                    movies: movies,
-                    isFavorite: true,
-                  )
-                : MovieList(
-                    movies: movies,
-                    isFavorite: true,
-                  ),
-          )
-        ],
-      ),
-    );
+          actions: [],
+        ),
+        body:
+            loading ? Loading() : MovieList(movies: movies, isFavorite: true));
   }
 }

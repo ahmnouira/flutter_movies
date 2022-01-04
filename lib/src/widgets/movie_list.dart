@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/src/models/movie.dart';
+import 'package:flutter_movies/src/pages/favorite_pages.dart';
 import 'package:flutter_movies/src/pages/movie_details.dart';
+import 'package:flutter_movies/src/pages/movie_page.dart';
 import 'package:flutter_movies/src/services/favorite_service.dart';
 
 class MovieList extends StatelessWidget {
@@ -17,13 +19,17 @@ class MovieList extends StatelessWidget {
     await Navigator.push(context, route);
   }
 
-  Future<Map<String, dynamic>> _handlePress(Movie movie) async {
+  Future _handlePress(Movie movie, BuildContext context) async {
     if (isFavorite) {
       final result = await favoriteService.removeFormFavorites(movie);
-      return {"action": "delete", "result": result};
+      print(result);
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => FavoritePage()));
+      // return {"action": "delete", "result": result};
     } else {
       final result = await favoriteService.addToFavorites(movie);
-      return {"action": "add", "result": result};
+      print(result);
+      // return {"action": "add", "result": result};
     }
   }
 
@@ -36,7 +42,7 @@ class MovieList extends StatelessWidget {
         'https://images.freeimages.com/images/large-previews/5eb/movie-clapboard-1184339.jpg';
 
     return (Container(
-        height: MediaQuery.of(context).size.height / 1.4, // 60%
+        // height: MediaQuery.of(context).size.height / 1.4, // 60%
         child: ListView.builder(
             itemBuilder: (BuildContext context, int position) {
               final movie = movies[position];
@@ -51,16 +57,14 @@ class MovieList extends StatelessWidget {
                 child: ListTile(
                   onTap: () => _handleTap(context, position),
                   trailing: IconButton(
-                    onPressed: () {
-                      final map = _handlePress(movie);
-                      print(map);
-                    },
-                    tooltip: (isFavorite)
-                        ? "Remove from favorites"
-                        : "Add to favorites",
-                    icon: Icon(Icons.star),
-                    color: isFavorite ? Colors.red : Colors.amber,
-                  ),
+                      onPressed: () {
+                        _handlePress(movie, context);
+                      },
+                      tooltip: (isFavorite)
+                          ? "Remove from favorites"
+                          : "Add to favorites",
+                      icon: Icon(Icons.star),
+                      color: isFavorite ? Colors.amber : Colors.grey),
                   leading: CircleAvatar(
                     backgroundImage: image,
                     backgroundColor: Colors.grey,
