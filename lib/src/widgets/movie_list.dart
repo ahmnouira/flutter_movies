@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/src/models/movie.dart';
 import 'package:flutter_movies/src/services/movie_service.dart';
+import 'package:flutter_movies/src/widgets/loading.dart';
 
 class MovieList extends StatefulWidget {
   const MovieList({Key? key, bool search = false}) : super(key: key);
@@ -22,40 +23,53 @@ class _MovieListState extends State<MovieList> {
   Icon visibleIcon = Icon(Icons.search);
   Widget searchBar = Text("Movies");
 
+  bool loading = true;
+
   _onPress() {
-    setState(() {
-      if (this.visibleIcon.icon == Icons.search) {
+    if (this.visibleIcon.icon == Icons.search) {
+      setState(() {
         this.visibleIcon = Icon(Icons.cancel);
         this.searchBar = TextField(
           textInputAction: TextInputAction.search,
+          cursorWidth: 2,
+          cursorColor: Colors.blue,
           onSubmitted: (String text) {
             seach(text);
           },
           style: TextStyle(color: Colors.white, fontSize: 20.0),
         );
-      } else {
-        setState(() {
-          this.visibleIcon = Icon(Icons.search);
-          this.searchBar = Text("Movies");
-        });
-      }
-    });
+      });
+    } else {
+      intialize();
+      setState(() {
+        this.visibleIcon = Icon(Icons.search);
+        this.searchBar = Text("Movies");
+      });
+    }
   }
 
   Future seach(String text) async {
+    setState(() {
+      loading = true;
+    });
     movies = await movieService.findMovies(text);
     setState(() {
       moviesCount = movies.length;
       movies = movies;
+      loading = false;
     });
   }
 
   Future intialize() async {
+    setState(() {
+      loading = true;
+    });
     movies = [];
     movies = await movieService.getUpcoming();
     setState(() {
       moviesCount = movies.length;
       movies = movies;
+      loading = false;
     });
   }
 
@@ -74,33 +88,44 @@ class _MovieListState extends State<MovieList> {
         title: searchBar,
         actions: <Widget>[IconButton(onPressed: _onPress, icon: visibleIcon)],
       ),
-      body: Container(
-        child: (ListView.builder(
-            itemBuilder: (BuildContext context, int position) {
-              final movie = movies[position];
-              if (movie.posterPath != null) {
-                image = NetworkImage(iconBase + movie.posterPath);
-              } else {
-                image = NetworkImage(defaultImage);
-              }
-              return (Card(
-                color: Colors.white,
-                elevation: 2.0,
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: image,
-                    backgroundColor: Colors.grey,
+      body: loading
+          ? Loading()
+          : movies.length == 0
+              ? (Container(
+                  margin: EdgeInsets.only(top: 32),
+                  child: Text(
+                    'Not Found',
+                    style: TextStyle(fontSize: 24),
+                    textAlign: TextAlign.center,
                   ),
-                  title: Text(movie.title),
-                  subtitle: Text('Released: ' +
-                      movie.releaseDate +
-                      ' - Vote: ' +
-                      movie.voteAverage.toString()),
+                ))
+              : Container(
+                  child: (ListView.builder(
+                      itemBuilder: (BuildContext context, int position) {
+                        final movie = movies[position];
+                        if (movie.posterPath != null) {
+                          image = NetworkImage(iconBase + movie.posterPath);
+                        } else {
+                          image = NetworkImage(defaultImage);
+                        }
+                        return (Card(
+                          color: Colors.white,
+                          elevation: 2.0,
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage: image,
+                              backgroundColor: Colors.grey,
+                            ),
+                            title: Text(movie.title),
+                            subtitle: Text('Released: ' +
+                                movie.releaseDate +
+                                ' - Vote: ' +
+                                movie.voteAverage.toString()),
+                          ),
+                        ));
+                      },
+                      itemCount: this.moviesCount)),
                 ),
-              ));
-            },
-            itemCount: this.moviesCount)),
-      ),
     );
   }
 }

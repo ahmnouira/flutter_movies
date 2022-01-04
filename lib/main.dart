@@ -10,7 +10,7 @@ class Movies extends StatelessWidget {
     return MaterialApp(
       title: "Movies",
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blueGrey),
+      theme: ThemeData(primarySwatch: Colors.deepPurple),
       home: Home(),
     );
   }
