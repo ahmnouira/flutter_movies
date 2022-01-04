@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_movies/src/models/movie.dart';
 import 'package:flutter_movies/src/pages/favorite_pages.dart';
 import 'package:flutter_movies/src/pages/movie_details.dart';
-import 'package:flutter_movies/src/pages/movie_page.dart';
 import 'package:flutter_movies/src/services/favorite_service.dart';
 
 class MovieList extends StatelessWidget {
@@ -29,6 +28,7 @@ class MovieList extends StatelessWidget {
     } else {
       final result = await favoriteService.addToFavorites(movie);
       print(result);
+
       // return {"action": "add", "result": result};
     }
   }

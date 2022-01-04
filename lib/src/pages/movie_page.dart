@@ -3,7 +3,7 @@ import 'package:flutter_movies/src/models/movie.dart';
 import 'package:flutter_movies/src/pages/favorite_pages.dart';
 import 'package:flutter_movies/src/services/movie_service.dart';
 import 'package:flutter_movies/src/widgets/loading.dart';
-import 'package:flutter_movies/src/widgets/movie_list.dart';
+import 'package:flutter_movies/src/widgets/movie_grid.dart';
 
 class MoviePage extends StatefulWidget {
   const MoviePage({Key? key, bool search = false}) : super(key: key);
@@ -100,6 +100,11 @@ class _MoviePageState extends State<MoviePage> {
             ),
           ],
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => intialize(),
+          tooltip: 'Refresh',
+          child: Icon(Icons.refresh),
+        ),
         body: loading
             ? Loading()
             : movies.length == 0
@@ -111,9 +116,6 @@ class _MoviePageState extends State<MoviePage> {
                       textAlign: TextAlign.center,
                     ),
                   ))
-                : MovieList(
-                    movies: movies,
-                    isFavorite: false,
-                  ));
+                : Container(child: MovieGrid(movies: movies)));
   }
 }

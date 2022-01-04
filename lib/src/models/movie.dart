@@ -29,4 +29,9 @@ class Movie {
       'posterPath': posterPath
     };
   }
+
+  @override
+  String toString() {
+    return this.toJson().toString();
+  }
 }
