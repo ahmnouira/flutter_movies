@@ -1,53 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/src/models/movie.dart';
 import 'package:flutter_movies/src/pages/movie_details.dart';
-import 'package:flutter_movies/src/services/movie_service.dart';
-import 'package:flutter_movies/src/widgets/loading.dart';
+import 'package:flutter_movies/src/services/favorite_service.dart';
 
-class MovieList extends StatefulWidget {
-  const MovieList({Key? key, bool search = false}) : super(key: key);
+class MovieList extends StatelessWidget {
+  final List<Movie> movies;
+  final bool isFavorite;
 
-  @override
-  _MovieListState createState() => _MovieListState();
-}
+  MovieList({required this.movies, this.isFavorite = false});
 
-class _MovieListState extends State<MovieList> {
-  late String result;
-  late List<Movie> movies;
-  int moviesCount = 0;
-  late MovieService movieService;
-
-  final String iconBase = 'https://image.tmdb.org/t/p/w92/';
-  final String defaultImage =
-      'https://images.freeimages.com/images/large-previews/5eb/movie-clapboard-1184339.jpg';
-
-  Icon visibleIcon = Icon(Icons.search);
-  Widget searchBar = Text("Movies");
-
-  bool loading = true;
-
-  _onPress() {
-    if (this.visibleIcon.icon == Icons.search) {
-      setState(() {
-        this.visibleIcon = Icon(Icons.cancel);
-        this.searchBar = TextField(
-          textInputAction: TextInputAction.search,
-          cursorWidth: 2,
-          cursorColor: Colors.blue,
-          onSubmitted: (String text) {
-            seach(text);
-          },
-          style: TextStyle(color: Colors.white, fontSize: 20.0),
-        );
-      });
-    } else {
-      intialize();
-      setState(() {
-        this.visibleIcon = Icon(Icons.search);
-        this.searchBar = Text("Movies");
-      });
-    }
-  }
+  final FavoriteService favoriteService = FavoriteService();
 
   Future _handleTap(BuildContext context, int index) async {
     MaterialPageRoute route =
@@ -55,85 +17,49 @@ class _MovieListState extends State<MovieList> {
     await Navigator.push(context, route);
   }
 
-  Future seach(String text) async {
-    setState(() {
-      loading = true;
-    });
-    movies = await movieService.findMovies(text);
-    setState(() {
-      moviesCount = movies.length;
-      movies = movies;
-      loading = false;
-    });
-  }
-
-  Future intialize() async {
-    setState(() {
-      loading = true;
-    });
-    movies = [];
-    movies = await movieService.getUpcoming();
-    setState(() {
-      moviesCount = movies.length;
-      movies = movies;
-      loading = false;
-    });
-  }
-
-  @override
-  void initState() {
-    movieService = MovieService();
-    intialize();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final moviesCount = movies.length;
     NetworkImage image;
-    return Scaffold(
-      appBar: AppBar(
-        title: searchBar,
-        actions: <Widget>[IconButton(onPressed: _onPress, icon: visibleIcon)],
-      ),
-      body: loading
-          ? Loading()
-          : movies.length == 0
-              ? (Container(
-                  margin: EdgeInsets.only(top: 32),
-                  child: Text(
-                    'Not Found',
-                    style: TextStyle(fontSize: 24),
-                    textAlign: TextAlign.center,
+    final String iconBase = 'https://image.tmdb.org/t/p/w92/';
+    final String defaultImage =
+        'https://images.freeimages.com/images/large-previews/5eb/movie-clapboard-1184339.jpg';
+
+    return (Container(
+        height: MediaQuery.of(context).size.height / 1.4, // 60%
+        child: ListView.builder(
+            itemBuilder: (BuildContext context, int position) {
+              final movie = movies[position];
+              if (movie.posterPath != null) {
+                image = NetworkImage(iconBase + movie.posterPath);
+              } else {
+                image = NetworkImage(defaultImage);
+              }
+              return (Card(
+                color: Colors.white,
+                elevation: 2.0,
+                child: ListTile(
+                  onTap: () => _handleTap(context, position),
+                  trailing: IconButton(
+                    onPressed: () {},
+                    tooltip: (isFavorite)
+                        ? "Remove from favorites"
+                        : "Add to favorites",
+                    icon: Icon(Icons.star),
+                    color: isFavorite ? Colors.red : Colors.amber,
                   ),
-                ))
-              : Container(
-                  child: (ListView.builder(
-                      itemBuilder: (BuildContext context, int position) {
-                        final movie = movies[position];
-                        if (movie.posterPath != null) {
-                          image = NetworkImage(iconBase + movie.posterPath);
-                        } else {
-                          image = NetworkImage(defaultImage);
-                        }
-                        return (Card(
-                          color: Colors.white,
-                          elevation: 2.0,
-                          child: ListTile(
-                            onTap: () => _handleTap(context, position),
-                            leading: CircleAvatar(
-                              backgroundImage: image,
-                              backgroundColor: Colors.grey,
-                            ),
-                            title: Text(movie.title),
-                            subtitle: Text('Released: ' +
-                                movie.releaseDate +
-                                ' - Vote: ' +
-                                movie.voteAverage.toString()),
-                          ),
-                        ));
-                      },
-                      itemCount: this.moviesCount)),
+                  leading: CircleAvatar(
+                    backgroundImage: image,
+                    backgroundColor: Colors.grey,
+                  ),
+                  title: Text(movie.title),
+                  subtitle: Text('Released: ' +
+                      movie.releaseDate +
+                      ' - Vote: ' +
+                      movie.voteAverage.toString()),
                 ),
-    );
+              ));
+            },
+            itemCount: moviesCount)));
   }
 }
