@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/src/models/movie.dart';
+import 'package:flutter_movies/src/pages/movie_details.dart';
 import 'package:flutter_movies/src/services/movie_service.dart';
 import 'package:flutter_movies/src/widgets/loading.dart';
 
@@ -46,6 +47,12 @@ class _MovieListState extends State<MovieList> {
         this.searchBar = Text("Movies");
       });
     }
+  }
+
+  Future _handleTap(BuildContext context, int index) async {
+    MaterialPageRoute route =
+        MaterialPageRoute(builder: (_) => MovieDetails(movie: movies[index]));
+    await Navigator.push(context, route);
   }
 
   Future seach(String text) async {
@@ -112,6 +119,7 @@ class _MovieListState extends State<MovieList> {
                           color: Colors.white,
                           elevation: 2.0,
                           child: ListTile(
+                            onTap: () => _handleTap(context, position),
                             leading: CircleAvatar(
                               backgroundImage: image,
                               backgroundColor: Colors.grey,
