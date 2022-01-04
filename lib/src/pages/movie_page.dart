@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/src/models/movie.dart';
+import 'package:flutter_movies/src/pages/favorite_pages.dart';
 import 'package:flutter_movies/src/services/movie_service.dart';
 import 'package:flutter_movies/src/widgets/loading.dart';
 import 'package:flutter_movies/src/widgets/movie_list.dart';
@@ -22,7 +23,7 @@ class _MoviePageState extends State<MoviePage> {
 
   bool loading = true;
 
-  _onPress() {
+  void _onPress() {
     if (this.visibleIcon.icon == Icons.search) {
       setState(() {
         this.visibleIcon = Icon(Icons.cancel);
@@ -43,6 +44,11 @@ class _MoviePageState extends State<MoviePage> {
         this.searchBar = Text("Movies");
       });
     }
+  }
+
+  Future<void> _navigateToFavorite(BuildContext context) async {
+    MaterialPageRoute route = MaterialPageRoute(builder: (_) => FavoritePage());
+    await Navigator.push(context, route);
   }
 
   Future seach(String text) async {
@@ -82,7 +88,19 @@ class _MoviePageState extends State<MoviePage> {
     return Scaffold(
         appBar: AppBar(
           title: searchBar,
-          actions: <Widget>[IconButton(onPressed: _onPress, icon: visibleIcon)],
+          actions: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: InkWell(
+                child: Icon(Icons.star),
+                onTap: () => _navigateToFavorite,
+              ),
+            ),
+            InkWell(
+              child: visibleIcon,
+              onTap: _onPress,
+            )
+          ],
         ),
         body: loading
             ? Loading()

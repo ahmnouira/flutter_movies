@@ -17,6 +17,16 @@ class MovieList extends StatelessWidget {
     await Navigator.push(context, route);
   }
 
+  Future<Map<String, dynamic>> _handlePress(Movie movie) async {
+    if (isFavorite) {
+      final result = await favoriteService.removeFormFavorites(movie);
+      return {"action": "delete", "result": result};
+    } else {
+      final result = await favoriteService.addToFavorites(movie);
+      return {"action": "add", "result": result};
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final moviesCount = movies.length;
@@ -41,7 +51,10 @@ class MovieList extends StatelessWidget {
                 child: ListTile(
                   onTap: () => _handleTap(context, position),
                   trailing: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      final map = _handlePress(movie);
+                      print(map);
+                    },
                     tooltip: (isFavorite)
                         ? "Remove from favorites"
                         : "Add to favorites",
