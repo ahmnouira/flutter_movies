@@ -17,4 +17,16 @@ class Movie {
     this.overview = parsedJson['overview'];
     this.posterPath = parsedJson['poster_path'];
   }
+
+  // string represention
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'voteAverage': voteAverage,
+      'releaseDate': releaseDate,
+      'overview': overview,
+      'posterPath': posterPath
+    };
+  }
 }
