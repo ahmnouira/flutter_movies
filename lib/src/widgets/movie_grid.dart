@@ -7,13 +7,15 @@ class MovieGrid extends StatelessWidget {
 
   const MovieGrid({Key? key, required this.movies}) : super(key: key);
 
-  Future _handleTap(BuildContext context, int index) async {
+  Future _handleTap(BuildContext context, Movie movie) async {
     MaterialPageRoute route =
-        MaterialPageRoute(builder: (_) => MovieDetails(movie: movies[index]));
+        MaterialPageRoute(builder: (_) => MovieDetails(movie: movie));
     await Navigator.push(context, route);
   }
 
-  List<Widget> _renderGird() {
+  List<Widget> _renderGird(
+    BuildContext context,
+  ) {
     List<Widget> widgets = [];
     String image;
     final String iconBase = 'https://image.tmdb.org/t/p/w500/';
@@ -26,23 +28,24 @@ class MovieGrid extends StatelessWidget {
         image = defaultImage;
       }
 
-      Widget widget = Card(
-          elevation: 8.0,
-          child: InkWell(
-              onTap: () => _handleTap,
-              child: GridTile(
-                child: Image.network(
-                  image,
-                  fit: BoxFit.cover,
+      Widget widget = GestureDetector(
+          onTap: () => _handleTap(context, movie),
+          child: Card(
+            elevation: 2.0,
+            child: GridTile(
+              child: Image.network(
+                image,
+                fit: BoxFit.cover,
+              ),
+              header: GridTileBar(
+                backgroundColor: Color.fromRGBO(0, 0, 0, 0.5),
+                title: Text(
+                  movie.title,
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                header: GridTileBar(
-                  backgroundColor: Color.fromRGBO(0, 0, 0, 0.5),
-                  title: Text(
-                    movie.title,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              )));
+              ),
+            ),
+          ));
 
       widgets.add(widget);
     }
@@ -52,8 +55,8 @@ class MovieGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OrientationBuilder(builder: (context, orientaion) {
-      return GridView.count(crossAxisCount: 2, children: _renderGird());
+    return OrientationBuilder(builder: (ctx, orientaion) {
+      return GridView.count(crossAxisCount: 2, children: _renderGird(context));
     });
   }
 }
